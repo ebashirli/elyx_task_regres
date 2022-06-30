@@ -39,6 +39,13 @@ class _UserUpdatePageState extends State<UserUpdatePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        leading: const BackButton(
+          color: Colors.black,
+        ),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -119,17 +126,15 @@ class _UserUpdatePageState extends State<UserUpdatePage> {
       builder: (context) => const Center(child: CircularProgressIndicator()),
     );
 
-    final response_body = await _api.updateUser(id: widget.user.id!, data: {
+    final responseBody = await _api.updateUser(id: widget.user.id!, data: {
       "email": email,
       "firstName": firstName,
       "lastName": lastName,
     });
 
-    print(response_body);
-
-    if (response_body.containsKey("updatedAt")) {
+    if (responseBody.containsKey("updatedAt")) {
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Updated at ${response_body['updatedAt']}")));
+          SnackBar(content: Text("Updated at ${responseBody['updatedAt']}")));
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
@@ -138,7 +143,7 @@ class _UserUpdatePageState extends State<UserUpdatePage> {
         (route) => false,
       );
     } else {
-      final error = response_body["error"];
+      final error = responseBody["error"];
       Navigator.pop(context);
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(('$error'))));

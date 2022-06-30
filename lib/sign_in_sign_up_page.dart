@@ -123,14 +123,14 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
       builder: (context) => const Center(child: CircularProgressIndicator()),
     );
 
-    final response_body = await _api.registerLogin(
+    final responseBody = await _api.registerLogin(
       email: email,
       password: password,
       isLogin: widget.isLogin,
     );
 
-    if (response_body.containsKey("token")) {
-      CacheManager.setToken(response_body["token"]!);
+    if (responseBody.containsKey("token")) {
+      CacheManager.setToken(responseBody["token"]!);
       CacheManager.setEmail(email);
       Navigator.pushAndRemoveUntil(
         context,
@@ -140,7 +140,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         (route) => false,
       );
     } else {
-      final error = response_body["error"];
+      final error = responseBody["error"];
       Navigator.pop(context);
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(('$error'))));

@@ -8,10 +8,7 @@ class ApiManager {
   Future<http.Response> getUsers(int page) async {
     final http.Response response = await http
         .get(Uri.parse("$baseUrl/api/users?page=$page"))
-        .whenComplete(() => print("complete:"))
-        .catchError((onError) {
-      print("error:${onError.toString()}");
-    });
+        .catchError((onError) {});
     return response;
   }
 

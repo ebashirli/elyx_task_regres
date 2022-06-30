@@ -33,12 +33,11 @@ class _ProfilePageState extends State<ProfilePage> {
           ProfileWidget(
             urlAvatar: user.urlAvatar,
             onClicked: () async {
-              Navigator.pushAndRemoveUntil(
+              Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => UserUpdatePage(user: user),
                 ),
-                (route) => false,
               );
             },
           ),
