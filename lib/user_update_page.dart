@@ -125,9 +125,11 @@ class _UserUpdatePageState extends State<UserUpdatePage> {
       "lastName": lastName,
     });
 
+    print(response_body);
+
     if (response_body.containsKey("updatedAt")) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Updated"')));
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Updated at ${response_body['updatedAt']}")));
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(

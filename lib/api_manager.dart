@@ -36,7 +36,7 @@ class ApiManager {
   }
 
   Future updateUser({required int id, required Map data}) async {
-    final http.Response response = await http.post(
+    final http.Response response = await http.put(
       Uri.parse("$baseUrl/api/users/$id"),
       body: data,
     );
