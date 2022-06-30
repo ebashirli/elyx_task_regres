@@ -1,5 +1,6 @@
 import 'package:elyx_task_regres/profile_widget.dart';
 import 'package:elyx_task_regres/user.dart';
+import 'package:elyx_task_regres/user_update_page.dart';
 import 'package:flutter/material.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -31,7 +32,15 @@ class _ProfilePageState extends State<ProfilePage> {
         children: [
           ProfileWidget(
             urlAvatar: user.urlAvatar,
-            onClicked: () async {},
+            onClicked: () async {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => UserUpdatePage(user: user),
+                ),
+                (route) => false,
+              );
+            },
           ),
           const SizedBox(height: 20),
           buildName(user: user),

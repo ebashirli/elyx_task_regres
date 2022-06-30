@@ -17,6 +17,7 @@ class ProfileWidget extends StatelessWidget {
     return Center(
       child: Stack(children: [
         buildImage(),
+        // if (isCurrentUser)
         Positioned(
           bottom: 0,
           right: 4,

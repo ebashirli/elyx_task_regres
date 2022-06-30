@@ -35,11 +35,12 @@ class ApiManager {
     return response;
   }
 
-  Future<http.Response> updateUser({required int id, required Map data}) async {
+  Future updateUser({required int id, required Map data}) async {
     final http.Response response = await http.post(
       Uri.parse("$baseUrl/api/users/$id"),
       body: data,
     );
-    return response;
+
+    return json.decode(response.body);
   }
 }
