@@ -4,14 +4,22 @@ class CacheManager {
   static SharedPreferences? _preferences;
 
   static const _keyToken = "token";
+  static const _keyEmail = "id";
 
   static Future init() async =>
       _preferences = await SharedPreferences.getInstance();
 
-  static Future setToken(String email) async =>
-      await _preferences?.setString(_keyToken, email);
+  static Future setToken(String token) async =>
+      await _preferences?.setString(_keyToken, token);
 
-  static Future<String?> getToken() async => _preferences?.getString(_keyToken);
+  static String? getToken() => _preferences?.getString(_keyToken);
 
-  static Future removeToken() async => await _preferences?.remove(_keyToken);
+  static removeToken() => _preferences?.remove(_keyToken);
+
+  static Future setEmail(String email) async =>
+      await _preferences?.setString(_keyEmail, email);
+
+  static String? getEmail() => _preferences?.getString(_keyEmail);
+
+  static removeEmail() => _preferences?.remove(_keyEmail);
 }

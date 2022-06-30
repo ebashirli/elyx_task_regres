@@ -1,23 +1,25 @@
-import 'package:dio/dio.dart';
+import 'package:elyx_task_regres/api_manager.dart';
 import 'package:elyx_task_regres/cache_manager.dart';
-import 'package:elyx_task_regres/utils.dart';
+import 'package:elyx_task_regres/main.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginSignUpPage extends StatefulWidget {
   final VoidCallback onClickedSignUp;
+  final bool isLogin;
 
-  const LoginPage({
+  const LoginSignUpPage({
     Key? key,
     required this.onClickedSignUp,
+    this.isLogin = true,
   }) : super(key: key);
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<LoginSignUpPage> createState() => _LoginSignUpPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginSignUpPageState extends State<LoginSignUpPage> {
   final formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -32,6 +34,8 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isLogin = widget.isLogin;
+
     return Scaffold(
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -43,7 +47,7 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(height: 40),
               TextFormField(
                 controller: emailController,
-                cursorColor: Colors.white,
+                cursorColor: Colors.black,
                 textInputAction: TextInputAction.next,
                 decoration: const InputDecoration(labelText: 'Email'),
                 autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -69,26 +73,28 @@ class _LoginPageState extends State<LoginPage> {
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size.fromHeight(50),
                 ),
-                onPressed: signIn,
+                onPressed: signInUp,
                 icon: const Icon(
                   Icons.lock_open,
                   size: 34,
                 ),
-                label: const Text(
-                  'Sign In',
-                  style: TextStyle(fontSize: 24),
+                label: Text(
+                  isLogin ? "Sign in" : "Sign Up",
+                  style: const TextStyle(fontSize: 24),
                 ),
               ),
               const SizedBox(height: 20),
               RichText(
                 text: TextSpan(
                     style: const TextStyle(color: Colors.black, fontSize: 20),
-                    text: "No account?  ",
+                    text: isLogin
+                        ? "No account?  "
+                        : "Already have an account?  ",
                     children: [
                       TextSpan(
                         recognizer: TapGestureRecognizer()
                           ..onTap = widget.onClickedSignUp,
-                        text: "Sign Up",
+                        text: isLogin ? "Sign up" : "Sign in",
                         style: TextStyle(
                           decoration: TextDecoration.underline,
                           color: Theme.of(context).colorScheme.secondary,
@@ -103,7 +109,9 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Future signIn() async {
+  final _api = ApiManager();
+
+  Future signInUp() async {
     final isValid = formKey.currentState!.validate();
     if (!isValid) return;
     final String email = emailController.text.trim();
@@ -115,22 +123,27 @@ class _LoginPageState extends State<LoginPage> {
       builder: (context) => const Center(child: CircularProgressIndicator()),
     );
 
-    try {
-      final Response response = await Dio().post(
-        "https://reqres.in/api/login",
-        data: {
-          "email": email,
-          "password": password,
-        },
-      );
+    final response_body = await _api.registerLogin(
+      email: email,
+      password: password,
+      isLogin: widget.isLogin,
+    );
 
-      if (response.statusCode == 200) {
-        CacheManager.setToken(response.data["token"]);
-      } else {}
-    } on DioError catch (e) {
-      print(e);
-      Utils.showSnackBar(e.message);
+    if (response_body.containsKey("token")) {
+      CacheManager.setToken(response_body["token"]!);
+      CacheManager.setEmail(email);
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const MainPage(),
+        ),
+        (route) => false,
+      );
+    } else {
+      final error = response_body["error"];
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(('$error'))));
     }
-    Utils.getBack();
   }
 }

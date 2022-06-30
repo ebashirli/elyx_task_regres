@@ -13,7 +13,7 @@ class UsersPage extends StatefulWidget {
 
 class _UsersPageState extends State<UsersPage> {
   final controller = ScrollController();
-  List<User> users = [];
+  List<User?> users = [];
   bool hasMore = true;
   int pageCount = 1;
 
@@ -53,32 +53,50 @@ class _UsersPageState extends State<UsersPage> {
   }
 
   @override
-  Widget build(BuildContext context) => ListView.builder(
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        buildUserCard(users.first),
+        const Divider(),
+        Expanded(
+          child: buildUsersList(),
+        ),
+      ],
+    );
+  }
+
+  buildUserCard(User? user) => user == null
+      ? const CircularProgressIndicator()
+      : SizedBox(
+          height: 150,
+          child: Card(
+            child: ListTile(
+              leading: CircleAvatar(
+                radius: 30,
+                backgroundImage: NetworkImage(user.urlAvatar),
+              ),
+              title: Text(user.fullName),
+              subtitle: Text(user.email),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ProfilePage(user: user),
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+
+  Widget buildUsersList() => ListView.builder(
         controller: controller,
         padding: const EdgeInsets.all(8),
         itemCount: users.length + 1,
         itemBuilder: (context, index) {
           if (index < users.length) {
-            final User user = users[index];
-            return Card(
-              child: ListTile(
-                leading: CircleAvatar(
-                  radius: 30,
-                  backgroundImage: NetworkImage(user.urlAvatar),
-                ),
-                title: Text(user.fullName),
-                subtitle: Text(user.email),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => ProfilePage(
-                              user: user,
-                            )),
-                  );
-                },
-              ),
-            );
+            final User? user = users[index];
+            return buildUserCard(user);
           } else {
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 34),
